@@ -1,0 +1,45 @@
+name: Test
+
+# Controls when the workflow will run
+on:
+  push:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Allow the action to get the required token
+permissions:
+  id-token: write
+  contents: read
+
+# Our Azure environment that we want to sign into
+env:
+  CLIENT_ID: 8e80a94d-b9bc-48ed-8c68-7ebcf3f1e26a
+  TENANT_ID: 95877aab-f66b-4cd0-98a0-1218634664fa
+  KEYVAULT: testkv991
+
+jobs: 
+  Test:
+      runs-on: windows-latest
+      steps:
+        # Get users from Azure AD using access token provided by Azure CLI
+        - name: 'Get graph access token'
+          uses: azure/powershell@v1
+          with:
+            inlineScript: |
+              # Get JWT from GitHub
+              $audience = "api://AzureADTokenExchange"
+              $url = "{0}&audience={1}" -f $ENV:ACTIONS_ID_TOKEN_REQUEST_URL, $audience
+              $githubjwt = Invoke-RestMethod $url -Headers @{Authorization = ("bearer {0}" -f $ENV:ACTIONS_ID_TOKEN_REQUEST_TOKEN)}
+              
+              # Use the GitHub JWT as proof for authenticating as the app defined in env.CLIENT_ID:
+              $uri = "https://login.microsoftonline.com/{0}/oauth2/token" -f "${{env.TENANT_ID}}"
+              $body = "resource=https://vault.azure.net/&client_id=${{env.CLIENT_ID}}&grant_type=client_credentials&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion={0}" -f [System.Net.WebUtility]::UrlEncode($githubjwt.Value)
+              $kvtoken = Invoke-RestMethod $uri -Body $body -ContentType "application/x-www-form-urlencoded" -ErrorAction SilentlyContinue
+
+              # Use the received token to get the secret from KeyVault
+              Write-Host "Getting secret from KeyVault:"
+              
+              Invoke-RestMethod "https://${{env.KEYVAULT}}.vault.azure.net/secrets/somesecret" -Headers @{Authorization = ("Bearer {0}" -f $kvtoken.access_token)}
+            azPSVersion: "latest"
