@@ -22,5 +22,5 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Test something
-        run: Get-ChildItem -Recurse
+        run: if(!(Test-Path ./README2.md)) {Write-Error "Cannot find README.md"}
         shell: pwsh
