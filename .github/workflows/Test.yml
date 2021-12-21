@@ -32,5 +32,5 @@ jobs:
               $githubjwt = Invoke-RestMethod $url -Headers @{Authorization = ("bearer {0}" -f $ENV:ACTIONS_ID_TOKEN_REQUEST_TOKEN)}
               
               Write-Host "GitHub JWT payload:"
-              [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String(($githubjwt.Value -split "\.")[0])
+              [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String(($githubjwt.Value -split "\.")[0]))
             azPSVersion: "latest"
