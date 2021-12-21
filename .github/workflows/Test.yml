@@ -32,11 +32,13 @@ jobs:
             subscription-id: ${{env.SUBSCRIPTION_ID}}
             enable-AzPSSession: true
 
-        # Get resource group using the previously created session
+        # Get users from Azure AD using access token provided by Azure CLI
         - name: 'Get graph access token'
           uses: azure/powershell@v1
           with:
             inlineScript: |
               $token = Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com/"
               Invoke-RestMethod "https://graph.microsoft.com/v1.0/users" -Headers @{Authorization = ("Bearer {0}" -f $token.Token)} | Select-Object -ExpandProperty value | Measure-Object
+
+              dir ENV: | out-string | write-host
             azPSVersion: "latest"
