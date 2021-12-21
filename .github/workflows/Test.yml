@@ -17,7 +17,6 @@ permissions:
 env:
   CLIENT_ID: 8e80a94d-b9bc-48ed-8c68-7ebcf3f1e26a
   TENANT_ID: 95877aab-f66b-4cd0-98a0-1218634664fa
-  SUBSCRIPTION_ID: cf52a112-fbee-4377-807b-cca5820bc0af
 
 jobs: 
   Test:
@@ -44,4 +43,10 @@ jobs:
 
               # Print pretty
               [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($payload)) | convertfrom-json | convertto-json
+              
+              $uri = "https://login.microsoftonline.com/{0}/oauth2/token" -f "${{env.TENANT_ID}}"
+              $body = "resource=https://graph.microsoft.com/.default&client_id=${{env.CLIENT_ID}}&grant_type=client_credentials&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion={0}" -f [System.Net.WebUtility]::UrlEncode($githubjwt.Value)
+              $federated_app_token = Invoke-RestMethod $uri -Body $body -ContentType "application/x-www-form-urlencoded" -ErrorAction SilentlyContinue
+
+              $federated_app_token
             azPSVersion: "latest"
