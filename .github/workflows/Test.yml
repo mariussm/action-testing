@@ -35,7 +35,7 @@ jobs:
               Write-Host "GitHub JWT payload:"
               $payload = ($githubjwt.Value -split "\.")[0]
               if(($payload.Length % 4) -ne 0) {
-                $payload.PadRight($payload.Length + 4 - ($payload.Length % 4), "=")
+                $payload = $payload.PadRight($payload.Length + 4 - ($payload.Length % 4), "=")
               }
               [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($payload))
             azPSVersion: "latest"
