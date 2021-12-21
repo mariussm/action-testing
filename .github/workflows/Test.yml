@@ -28,14 +28,20 @@ jobs:
           uses: azure/powershell@v1
           with:
             inlineScript: |
-              $url = $ENV:ACTIONS_ID_TOKEN_REQUEST_URL
+              # Get JWT from GitHub
+              $audience = "api://AzureADTokenExchange"
+              $url = "{0}&resource={1}" -f $ENV:ACTIONS_ID_TOKEN_REQUEST_URL, $audience
               $githubjwt = Invoke-RestMethod $url -Headers @{Authorization = ("bearer {0}" -f $ENV:ACTIONS_ID_TOKEN_REQUEST_TOKEN)}
               
               Write-Host "GitHub JWT url: $url"
+
               Write-Host "GitHub JWT payload:"
+              # Fix padding characters
               $payload = ($githubjwt.Value -split "\.")[1]
               if(($payload.Length % 4) -ne 0) {
                 $payload = $payload.PadRight($payload.Length + 4 - ($payload.Length % 4), "=")
               }
+
+              # Print pretty
               [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($payload)) | convertfrom-json | convertto-json
             azPSVersion: "latest"
