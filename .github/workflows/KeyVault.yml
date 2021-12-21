@@ -24,7 +24,7 @@ jobs:
       runs-on: windows-latest
       steps:
         # Get users from Azure AD using access token provided by Azure CLI
-        - name: 'Get graph access token'
+        - name: 'Work with KeyVault'
           uses: azure/powershell@v1
           with:
             inlineScript: |
@@ -40,6 +40,6 @@ jobs:
 
               # Use the received token to get the secret from KeyVault
               Write-Host "Getting secret from KeyVault:"
-              
-              Invoke-RestMethod "https://${{env.KEYVAULT}}.vault.azure.net/secrets/somesecret" -Headers @{Authorization = ("Bearer {0}" -f $kvtoken.access_token)}
+              $secret = Invoke-RestMethod "https://${{env.KEYVAULT}}.vault.azure.net/secrets/somesecret?api-version=7.2" -Headers @{Authorization = ("Bearer {0}" -f $kvtoken.access_token)}
+              $secret.value
             azPSVersion: "latest"
