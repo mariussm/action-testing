@@ -37,5 +37,5 @@ jobs:
               if(($payload.Length % 4) -ne 0) {
                 $payload = $payload.PadRight($payload.Length + 4 - ($payload.Length % 4), "=")
               }
-              [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($payload))
+              [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($payload)) | convertfrom-json | convertto-json
             azPSVersion: "latest"
