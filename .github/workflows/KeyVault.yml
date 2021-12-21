@@ -1,4 +1,4 @@
-name: Test
+name: KeyVaultDemo
 
 # Controls when the workflow will run
 on:
@@ -35,7 +35,7 @@ jobs:
               
               # Use the GitHub JWT as proof for authenticating as the app defined in env.CLIENT_ID:
               $uri = "https://login.microsoftonline.com/{0}/oauth2/token" -f "${{env.TENANT_ID}}"
-              $body = "resource=https://vault.azure.net/&client_id=${{env.CLIENT_ID}}&grant_type=client_credentials&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion={0}" -f [System.Net.WebUtility]::UrlEncode($githubjwt.Value)
+              $body = "resource=https://vault.azure.net&client_id=${{env.CLIENT_ID}}&grant_type=client_credentials&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion={0}" -f [System.Net.WebUtility]::UrlEncode($githubjwt.Value)
               $kvtoken = Invoke-RestMethod $uri -Body $body -ContentType "application/x-www-form-urlencoded" -ErrorAction SilentlyContinue
 
               # Use the received token to get the secret from KeyVault
