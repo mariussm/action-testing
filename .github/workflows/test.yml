@@ -2,6 +2,10 @@
 
 name: Customer A
 
+env:
+  TestVariable1: "TestVar1Value"
+  TestVariable2: "TestVar2Value"
+
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
@@ -27,5 +31,5 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
-        run: echo "Hello, world!"
+        run: echo "Hello, world - ${{env.TestVariable1}}"
         shell: pwsh
