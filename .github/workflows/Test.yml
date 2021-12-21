@@ -27,37 +27,37 @@ jobs:
           uses: azure/powershell@v1
           with:
             inlineScript: |
-              # Get JWT from GitHub
+              # 1 - Get JWT from GitHub
               $audience = "api://AzureADTokenExchange"
               $url = "{0}&audience={1}" -f $ENV:ACTIONS_ID_TOKEN_REQUEST_URL, $audience
               $githubjwt = Invoke-RestMethod $url -Headers @{Authorization = ("bearer {0}" -f $ENV:ACTIONS_ID_TOKEN_REQUEST_TOKEN)}
               
+              # 2 - Print GitHub url and payload to screen for debuging
               Write-Host "GitHub JWT url: $url"
-
-              Write-Host "GitHub JWT payload:"
-              # Fix padding characters
+              Write-Host "GitHub JWT payload:"              
               $payload = ($githubjwt.Value -split "\.")[1]
               if(($payload.Length % 4) -ne 0) {
                 $payload = $payload.PadRight($payload.Length + 4 - ($payload.Length % 4), "=")
               }
-
-              # Print pretty
-              [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($payload)) | convertfrom-json | convertto-json
+              [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($payload)) | convertfrom-json | convertto-json # Pretty print
               
+              # 3 - Use the GitHub JWT as proof for authenticating as the app defined in env.CLIENT_ID:
               $uri = "https://login.microsoftonline.com/{0}/oauth2/v2.0/token" -f "${{env.TENANT_ID}}"
               $body = "scope=https://graph.microsoft.com/.default&client_id=${{env.CLIENT_ID}}&grant_type=client_credentials&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion={0}" -f [System.Net.WebUtility]::UrlEncode($githubjwt.Value)
               $aadtoken = Invoke-RestMethod $uri -Body $body -ContentType "application/x-www-form-urlencoded" -ErrorAction SilentlyContinue
 
+              # 4 - Print AAD url and payload to screen for debuging
+              Write-Host "AAD JWT url: $uri"
               Write-Host "AAD JWT payload:"
+
               # Fix padding characters
               $payload = ($aadtoken.access_token -split "\.")[1]
               if(($payload.Length % 4) -ne 0) {
                 $payload = $payload.PadRight($payload.Length + 4 - ($payload.Length % 4), "=")
               }
-
-              # Print pretty
               [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($payload)) | convertfrom-json | convertto-json
 
+              # 5 - Use the received token to get users from Graph
               Write-Host "Getting users from AAD:"
               Invoke-RestMethod "https://graph.microsoft.com/v1.0/users" -Headers @{Authorization = ("Bearer {0}" -f $aadtoken.access_token)} | Select-Object -ExpandProperty value | Measure-Object | Select-Object -ExpandProperty Count
             azPSVersion: "latest"
