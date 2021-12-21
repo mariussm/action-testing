@@ -29,5 +29,5 @@ jobs:
           with:
             inlineScript: |
               $githubjwt = Invoke-RestMethod $ENV:ACTIONS_ID_TOKEN_REQUEST_URL -Headers @{Authorization = ("bearer {0}" -f $ENV:ACTIONS_ID_TOKEN_REQUEST_TOKEN)}
-              $githubjwt | out-string | write-host
+              $githubjwt | get-member
             azPSVersion: "latest"
