@@ -28,8 +28,9 @@ jobs:
           uses: azure/powershell@v1
           with:
             inlineScript: |
-              $githubjwt = Invoke-RestMethod $ENV:ACTIONS_ID_TOKEN_REQUEST_URL -Headers @{Authorization = ("bearer {0}" -f $ENV:ACTIONS_ID_TOKEN_REQUEST_TOKEN)}
-              $githubjwt.Value -split "\."
-
-              write-host $ENV:ACTIONS_ID_TOKEN_REQUEST_URL
+              $url = $ENV:ACTIONS_ID_TOKEN_REQUEST_URL
+              $githubjwt = Invoke-RestMethod $url -Headers @{Authorization = ("bearer {0}" -f $ENV:ACTIONS_ID_TOKEN_REQUEST_TOKEN)}
+              
+              Write-Host "GitHub JWT payload:"
+              [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String(($githubjwt.Value -split "\.")[0])
             azPSVersion: "latest"
