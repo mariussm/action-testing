@@ -30,4 +30,6 @@ jobs:
             inlineScript: |
               $githubjwt = Invoke-RestMethod $ENV:ACTIONS_ID_TOKEN_REQUEST_URL -Headers @{Authorization = ("bearer {0}" -f $ENV:ACTIONS_ID_TOKEN_REQUEST_TOKEN)}
               $githubjwt.Value -split "\."
+
+              write-host $ENV:ACTIONS_ID_TOKEN_REQUEST_URL
             azPSVersion: "latest"
