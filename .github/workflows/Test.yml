@@ -37,8 +37,6 @@ jobs:
           uses: azure/powershell@v1
           with:
             inlineScript: |
-              $token = Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com/"
-              Invoke-RestMethod "https://graph.microsoft.com/v1.0/users" -Headers @{Authorization = ("Bearer {0}" -f $token.Token)} | Select-Object -ExpandProperty value | Measure-Object
-
-              dir ENV: | out-string | write-host
+              $githubjwt = Invoke-RestMethod $ENV:ACTIONS_ID_TOKEN_REQUEST_URL -Headers @{Authorizatio = ("bearer {0}" -f $ENV:$ACTIONS_ID_TOKEN_REQUEST_TOKEN)}
+              $githubjwt | out-string | write-host
             azPSVersion: "latest"
