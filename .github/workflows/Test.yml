@@ -33,10 +33,10 @@ jobs:
             enable-AzPSSession: true
 
         # Get resource group using the previously created session
-        - name: 'Get resource group with PowerShell action'
+        - name: 'Get graph access token'
           uses: azure/powershell@v1
           with:
             inlineScript: |
               `$token = Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com/"
-              Invoke-RestMethod "https://graph.microsoft.com/v1.0/users" -Headers @{Authorization = "Bearer `$(token.Token)"}
+              Invoke-RestMethod "https://graph.microsoft.com/v1.0/users" -Headers @{Authorization = "Bearer `$(`$token.Token)"} | Select-Object -ExpandProperty value | Measure-Object
             azPSVersion: "latest"
