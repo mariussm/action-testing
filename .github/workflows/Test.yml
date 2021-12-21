@@ -23,20 +23,11 @@ jobs:
   Test:
       runs-on: windows-latest
       steps:
-        # Step that uses our federated workflow identity and creates an Azure CLI session
-        - name: OIDC Login to Azure Public Cloud with AzPowershell (enableAzPSSession true)
-          uses: azure/login@v1
-          with:
-            client-id: ${{env.CLIENT_ID}}
-            tenant-id: ${{env.TENANT_ID}}
-            subscription-id: ${{env.SUBSCRIPTION_ID}}
-            enable-AzPSSession: true
-
         # Get users from Azure AD using access token provided by Azure CLI
         - name: 'Get graph access token'
           uses: azure/powershell@v1
           with:
             inlineScript: |
-              $githubjwt = Invoke-RestMethod $ENV:ACTIONS_ID_TOKEN_REQUEST_URL -Headers @{Authorizatio = ("bearer {0}" -f $ENV:$ACTIONS_ID_TOKEN_REQUEST_TOKEN)}
+              $githubjwt = Invoke-RestMethod $ENV:ACTIONS_ID_TOKEN_REQUEST_URL -Headers @{Authorizatio = ("bearer {0}" -f $ENV:ACTIONS_ID_TOKEN_REQUEST_TOKEN)}
               $githubjwt | out-string | write-host
             azPSVersion: "latest"
