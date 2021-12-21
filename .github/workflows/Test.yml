@@ -30,7 +30,7 @@ jobs:
             inlineScript: |
               # Get JWT from GitHub
               $audience = "api://AzureADTokenExchange"
-              $url = "{0}&resource={1}" -f $ENV:ACTIONS_ID_TOKEN_REQUEST_URL, $audience
+              $url = "{0}&aud={1}" -f $ENV:ACTIONS_ID_TOKEN_REQUEST_URL, $audience
               $githubjwt = Invoke-RestMethod $url -Headers @{Authorization = ("bearer {0}" -f $ENV:ACTIONS_ID_TOKEN_REQUEST_TOKEN)}
               
               Write-Host "GitHub JWT url: $url"
