@@ -21,6 +21,11 @@ jobs:
       - uses: actions/checkout@v2
 
       # Runs a single command using the runners shell
-      - name: Test something
+      - name: Test something1
         run: if(!(Test-Path ./README.md)) {Write-Error "Cannot find README.md"}
+        shell: pwsh
+
+      # Runs a single command using the runners shell
+      - name: Test something2
+        run: if(!(Test-Path ./.github)) {Write-Error "Cannot find the .github folder"}
         shell: pwsh
