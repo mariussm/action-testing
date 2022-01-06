@@ -30,10 +30,10 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Run a one-line script 1
-        run: echo "Hello, world - ${{env.TestVariable1}} ${{env.Username}}"
+        run: echo "Hello, world - ${{env.TestVariable1}} ${{secrets.Username}}"
         shell: pwsh
 
       # Runs a single command using the runners shell
       - name: Run a one-line script 2
-        run: echo "Hello, world - ${{env.TestVariable2}} ${{env.Password}}"
+        run: echo "Hello, world - ${{env.TestVariable2}} ${{secrets.Password}}"
         shell: pwsh
