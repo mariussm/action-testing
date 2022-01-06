@@ -2,6 +2,8 @@
 
 name: Customer A
 
+environment: "Customer A"
+
 env:
   TestVariable1: "TestVar1Value"
   TestVariable2: "TestVar2Value"
