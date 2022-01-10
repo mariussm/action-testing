@@ -5,6 +5,7 @@ name: Customer A
 env:
   TestVariable1: "TestVar1Value"
   TestVariable2: "TestVar2Value"
+  TestVariable3: "TestVar3Value"
 
 # Controls when the workflow will run
 on:
